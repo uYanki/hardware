@@ -1,0 +1,8 @@
+{
+    "EIDE.SerialPortMonitor.BaudRate": 9600,
+    "files.associations": {
+        "files.autoGuessEncoding": "",
+        "array": "cpp",
+        "string": "cpp"
+    }
+}
