@@ -29,7 +29,7 @@ uint8_t AT24C02_ReadBytes(uint8_t reg_addr, uint8_t* buf, uint8_t len) {
     uint8_t i;
     if ((reg_addr + len) > 255) return 0;
     for (i = 0; i < len; ++i) {
-        if (!i2c_read_byte(AT24C02_ADDRESS, reg_addr++, buf + i)) return 0;
+        if (!i2c_read_byte(AT24C02_ADDRESS, reg_addr++, buf++)) return 0;
         delay_ms(3);
     }
     return 1;
