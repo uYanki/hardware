@@ -55,9 +55,9 @@ while dpg.is_dearpygui_running():
 
         # 添加数据
 
-        # for i in line.split(","):
-        #     print(i)
-        val = int(line) / 32768 * 10
+        val = int(line) / 1000  # / 32768 / 10
+        # print(val)
+
         data_x.append(cnt)
 
         data_y.append(val)
