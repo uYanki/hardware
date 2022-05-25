@@ -387,14 +387,24 @@
               <FilePath>.\app.c</FilePath>
             </File>
             <File>
-              <FileName>lib_lcd1602.c</FileName>
+              <FileName>lib_i2c.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\lib_lcd1602.c</FilePath>
+              <FilePath>.\lib_i2c.c</FilePath>
             </File>
             <File>
-              <FileName>lib_lcd1602.h</FileName>
+              <FileName>lib_i2c.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\lib_lcd1602.h</FilePath>
+              <FilePath>.\lib_i2c.h</FilePath>
+            </File>
+            <File>
+              <FileName>lib_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\lib_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>lib_uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\lib_uart.h</FilePath>
             </File>
           </Files>
         </Group>
