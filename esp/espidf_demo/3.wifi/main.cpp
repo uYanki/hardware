@@ -101,8 +101,8 @@ extern "C" void app_main(void) {
     nvs_open("wifi_cfg", NVS_READWRITE, &hNVS);
 #if 0
     // 保存 ssid 和 pwd
-    nvs_set_str(hNVS, "ssid", "HUAWEI-Y6AZGD");
-    nvs_set_str(hNVS, "pwd", "13631520360");
+    nvs_set_str(hNVS, "ssid", WIFI_SSID);
+    nvs_set_str(hNVS, "pwd", WIFI_PWD);
     wifi_init_sta(WIFI_SSID, WIFI_PWD);
 #else
     // 读取 ssid 和 pwd
