@@ -29,11 +29,14 @@ with dpg.window(tag="MainWindow"):
     with dpg.plot(label=" Series", height=-1, width=-1, no_menus=True):
         with dpg.popup(dpg.last_item(), min_size=(0, 0)):
             dpg.add_text("count of points")
-            dpg.add_slider_int(min_value=100, max_value=1000, default_value=show_point_num, callback=cfg_show)
+            dpg.add_slider_int(min_value=100, max_value=10000, default_value=show_point_num, callback=cfg_show)
         dpg.add_plot_axis(dpg.mvXAxis, tag="x-axis")
         with dpg.plot_axis(dpg.mvYAxis, tag="y-axis"):
             dpg.add_line_series(data_x, data_y, tag="chart")
-        dpg.set_axis_limits("y-axis", ymin=-1, ymax=1)
+        # dpg.set_axis_limits("y-axis", ymin=0.2, ymax=0.4)
+        dpg.set_axis_limits("y-axis", ymin=0, ymax=1.1)
+        # dpg.set_axis_limits("y-axis", ymin=0.29, ymax=0.33)
+
 dpg.set_primary_window("MainWindow", True)
 dpg.setup_dearpygui()
 dpg.show_viewport()
@@ -55,7 +58,7 @@ while dpg.is_dearpygui_running():
 
         # 添加数据
 
-        val = int(line) / 1000  # / 32768 / 10
+        val = int(line) / 4096  # / 32768 / 10
         # print(val)
 
         data_x.append(cnt)
