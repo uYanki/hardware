@@ -1,0 +1,6 @@
+".\Objects\STARTUP.obj",
+".\Objects\app.obj",
+".\Objects\lib_i2c.obj",
+".\Objects\lib_uart.obj" 
+TO ".\Objects\demo" 
+PRINT(".\Listings\demo.m51") RAMSIZE(256) 

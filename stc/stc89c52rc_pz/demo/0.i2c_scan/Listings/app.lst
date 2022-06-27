@@ -1,0 +1,62 @@
+C51 COMPILER V9.54   APP                                                                   06/27/2022 16:43:27 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE APP
+OBJECT MODULE PLACED IN .\Objects\app.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE app.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\app.l
+                    -st) TABS(2) OBJECT(.\Objects\app.obj)
+
+line level    source
+
+   1          
+   2          #include "lib_i2c.h"
+   3          #include "lib_uart.h"
+   4          
+   5          void delay_ms(uint16_t ms) {
+   6   1          uint16_t i, j;
+   7   1          for (i = ms; i > 0; i--)
+   8   1              for (j = 110; j > 0; j--)
+   9   1                  ;
+  10   1      }
+  11          
+  12          void i2c_scan() {
+  13   1          uint8_t i;
+  14   1          uint8_t b = 0;
+  15   1          for (i = 0; i < 0x80; i++) {
+  16   2              if (i2c_check(i)) {
+  17   3                  b = 1;
+  18   3                  uart_sendstr("0x");
+  19   3                  uart_sendhex(i);
+  20   3                  uart_sendchar(' ');
+  21   3                  delay_ms(3000);
+  22   3              }
+  23   2              delay_ms(1);
+  24   2          }
+  25   1      
+  26   1          if (b)
+  27   1              uart_sendline();
+  28   1          else
+  29   1              uart_sendstr_ln("none");
+  30   1      }
+  31          
+  32          void main() {
+  33   1          uart_init();
+  34   1          while (1) {
+  35   2              delay_ms(5000);
+  36   2              i2c_scan();
+  37   2          }
+  38   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    122    ----
+   CONSTANT SIZE    =      8    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

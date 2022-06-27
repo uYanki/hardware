@@ -1,0 +1,222 @@
+C51 COMPILER V9.54   LIB_I2C                                                               06/27/2022 16:11:36 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE LIB_I2C
+OBJECT MODULE PLACED IN .\Objects\lib_i2c.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lib_i2c.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\l
+                    -ib_i2c.lst) TABS(2) OBJECT(.\Objects\lib_i2c.obj)
+
+line level    source
+
+   1          #include "lib_i2c.h"
+   2          
+   3          /* I2C
+   4          
+   5          空闲状态: 时钟线和数据线均为高电平
+   6          起始信号: 时钟线为高电平时,数据线由高电平变为低电平
+   7          停止信号: 时钟线为高电平时,数据线由低电平变为高电平
+   8          数据/应答位 单比特发送: 主机在时钟线为低电平时,可改变数据线电平
+   9          数据/应答位 单比特接收: 从机在时钟线为高电平时,对数据线进行采样
+  10          发送数据: 发送方向接受方发送1个字节(8个比特),然后接收方向发送方发送1个应�
+             -�位(1个比特)
+  11          接收数据: 接收方从发送方接收1个字节(8个比特),然后发送方从接受方接收1个应�
+             -�位(1个比特)
+  12          应答位: 在一方发送/接收8个比特后,另一方需发送/接收1个应答位 (低电平0为应答
+             -,高电平1为不应答)
+  13          延时作用: 防止设备在时钟线的上升沿/下降沿时进行采样
+  14          
+  15          START: when CLK is high, buf change form high to low
+  16          STOP:  when CLK is high buf change form low to high
+  17          
+  18          注: 整个收发过程中时钟线都由主机控制,且先发送高位再发送低位
+  19          
+  20          https://blog.csdn.net/CCSGTC/article/details/108571947
+  21          
+  22          主机往从机写数据:
+  23          1.主机控制数据线,产生起始条件,开始发送
+  24          2.主机控制数据线,发送7位地址位(A7:A1)+1位读写位(R/W,这里置0)
+  25            读写位为最低位,且高电平代表读,低电平代表写
+  26          3.从机控制数据线,发送应答位
+  27          4.主机控制数据线,发送从机中8位寄存器地址
+  28          5.从机控制数据线,发送应答位
+  29          6.主机控制数据线,发送要写的8位数据
+  30          7.从机控制数据线,发送应答位
+  31          8.可重复4~7的步骤,连续发送数据
+  32          9.主机控制数据线,产生停止条件,停止发送
+  33          
+  34          主机往从机读数据:
+  35          1.主机控制数据线,产生起始条件,开始发送
+  36          2.主机控制数据线,发送7位地址位(A7:A1)+1位读写位(R/W,这里置0)
+  37            读写位为最低位,且高电平代表读,低电平代表写
+  38          3.从机控制数据线,发送应答位
+  39          4.主机控制数据线,发送从机中8位寄存器地址
+  40          5.从机控制数据线,发送应答位 // 前5步和上方的相同
+  41          6.主机控制数据线,重新产生起始条件
+  42          7.主机控制数据线,发送7位地址位(A7:A1)+1位读写位(R/W,这里置1)
+  43          8.从机控制数据线,发送应答位
+  44          9.主机控制数据线,发送8位数据
+  45          10.从机控制数据线,发送应答位;如要发送停止条件,需先发送不应答
+  46          
+  47          */
+  48          
+  49          void i2c_delay() {
+  50   1          uint8_t i;
+  51   1          for (i = 0; i < 10; ++i) {}
+C51 COMPILER V9.54   LIB_I2C                                                               06/27/2022 16:11:36 PAGE 2   
+
+  52   1      }
+  53          
+  54          void i2c_start() {
+  55   1          I2C_SDA = 1;
+  56   1          I2C_SCL = 1;
+  57   1          i2c_delay();
+  58   1          I2C_SDA = 0;
+  59   1      }
+  60          
+  61          void i2c_stop() {
+  62   1          I2C_SDA = 0;
+  63   1          I2C_SCL = 1;
+  64   1          i2c_delay();
+  65   1          I2C_SDA = 1;
+  66   1      }
+  67          
+  68          void i2c_send_byte(uint8_t byte) {
+  69   1          uint8_t i = 8;
+  70   1          while (i--) {
+  71   2              I2C_SCL = 0;
+  72   2              I2C_SDA = byte & (1 << i);
+  73   2              i2c_delay();
+  74   2              I2C_SCL = 1;
+  75   2          }
+  76   1      }
+  77          
+  78          uint8_t i2c_recv_byte() {
+  79   1          uint8_t i    = 8;
+  80   1          uint8_t byte = 0;
+  81   1          while (i--) {
+  82   2              I2C_SCL = 1;
+  83   2              if (I2C_SDA)  //
+  84   2                  byte |= (1 << i);
+  85   2              i2c_delay();
+  86   2              I2C_SCL = 0;
+  87   2          }
+  88   1          return byte;
+  89   1      }
+  90          
+  91          void i2c_send_ack() {
+  92   1          I2C_SCL = 0;
+  93   1          I2C_SDA = 0;
+  94   1          I2C_SCL = 1;
+  95   1      }
+  96          
+  97          void i2c_send_nack() {
+  98   1          I2C_SCL = 0;
+  99   1          I2C_SDA = 1;
+ 100   1          i2c_delay();
+ 101   1          I2C_SCL = 1;
+ 102   1      }
+ 103          
+ 104          uint8_t i2c_recv_ack() {
+ 105   1          uint8_t t = 0;
+ 106   1          I2C_SCL   = 0;
+ 107   1          I2C_SDA   = 1;
+ 108   1          i2c_delay();
+ 109   1          I2C_SCL = 1;
+ 110   1          while (I2C_SDA) {
+ 111   2              if (++t > 250) {
+ 112   3                  i2c_stop();
+ 113   3                  return 1;  //无应答
+C51 COMPILER V9.54   LIB_I2C                                                               06/27/2022 16:11:36 PAGE 3   
+
+ 114   3              }
+ 115   2          }
+ 116   1          I2C_SCL = 0;
+ 117   1          return 0;  //有应答
+ 118   1      }
+ 119          
+ 120          // 检测器件是否存在 0不存在 1存在
+ 121          uint8_t i2c_check(uint8_t addr_dev) {
+ 122   1          i2c_start();
+ 123   1          i2c_send_byte((addr_dev << 1) | 0);
+ 124   1          if (i2c_recv_ack())  //
+ 125   1              return 0;
+ 126   1          i2c_stop();
+ 127   1          return 1;
+ 128   1      }
+ 129          
+ 130          uint8_t i2c_write_byte(uint8_t addr_dev, uint8_t addr_reg, uint8_t byte) {
+ 131   1          i2c_start();
+ 132   1          i2c_send_byte((addr_dev << 1) | 0);
+ 133   1          if (i2c_recv_ack()) return 0;
+ 134   1          i2c_send_byte(addr_reg);
+ 135   1          if (i2c_recv_ack()) return 0;
+ 136   1          i2c_send_byte(byte);
+ 137   1          if (i2c_recv_ack()) return 0;
+ 138   1          i2c_stop();
+ 139   1          return 1;
+ 140   1      }
+ 141          uint8_t i2c_read_byte(uint8_t addr_dev, uint8_t addr_reg, uint8_t* byte) {
+ 142   1          i2c_start();
+ 143   1          i2c_send_byte((addr_dev << 1) | 0);
+ 144   1          if (i2c_recv_ack()) return 0;
+ 145   1          i2c_send_byte(addr_reg);
+ 146   1          if (i2c_recv_ack()) return 0;
+ 147   1          i2c_start();
+ 148   1          i2c_send_byte((addr_dev << 1) | 1);
+ 149   1          if (i2c_recv_ack()) return 0;
+ 150   1          *byte = i2c_recv_byte();
+ 151   1          i2c_send_nack();
+ 152   1          i2c_stop();
+ 153   1          return 1;
+ 154   1      }
+ 155          
+ 156          uint8_t i2c_write_bytes(uint8_t addr_dev, uint8_t addr_reg, uint8_t* buf, uint8_t len) {
+ 157   1          uint8_t i;
+ 158   1          i2c_start();
+ 159   1          i2c_send_byte((addr_dev << 1) | 0);
+ 160   1          if (i2c_recv_ack()) return 0;
+ 161   1          i2c_send_byte(addr_reg);
+ 162   1          if (i2c_recv_ack()) return 0;
+ 163   1          for (i = 0; i < len; ++i) {
+ 164   2              i2c_send_byte(buf[i]);
+ 165   2              if (i2c_recv_ack()) return 0;
+ 166   2          }
+ 167   1          i2c_stop();
+ 168   1          return 1;
+ 169   1      }
+ 170          
+ 171          uint8_t i2c_read_bytes(uint8_t addr_dev, uint8_t addr_reg, uint8_t* buf, uint8_t len) {
+ 172   1          uint8_t i;
+ 173   1          i2c_start();
+ 174   1          i2c_send_byte((addr_dev << 1) | 0);
+ 175   1          if (i2c_recv_ack()) return 0;
+C51 COMPILER V9.54   LIB_I2C                                                               06/27/2022 16:11:36 PAGE 4   
+
+ 176   1          i2c_send_byte(addr_reg);
+ 177   1          if (i2c_recv_ack()) return 0;
+ 178   1          i2c_start();
+ 179   1          i2c_send_byte((addr_dev << 1) | 1);
+ 180   1          if (i2c_recv_ack()) return 0;
+ 181   1          for (i = 0; i < len - 1; ++i) {
+ 182   2              *buf++ = i2c_recv_byte();
+ 183   2              i2c_send_ack();
+ 184   2          }
+ 185   1          *buf = i2c_recv_byte();
+ 186   1          i2c_send_nack();
+ 187   1          i2c_stop();
+ 188   1          return 1;
+ 189   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    491    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      16
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

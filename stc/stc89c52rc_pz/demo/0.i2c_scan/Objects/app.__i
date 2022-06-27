@@ -1,0 +1,1 @@
+"app.c" OPTIMIZE (8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\app.lst) TABS (2) OBJECT(.\Objects\app.obj)
