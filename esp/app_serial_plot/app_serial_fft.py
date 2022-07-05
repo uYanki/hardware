@@ -29,7 +29,7 @@ with dpg.window(tag="MainWindow"):
             dpg.add_stair_series(data_x, data_y, tag="chart")
             dpg.bind_item_theme(dpg.last_item(), "series_theme")  # 主题绑定
 
-        dpg.set_axis_limits("y-axis", ymin=-100, ymax=6000)
+        dpg.set_axis_limits("y-axis", ymin=-100, ymax=2000)
 dpg.set_primary_window("MainWindow", True)
 dpg.setup_dearpygui()
 dpg.show_viewport()
@@ -38,8 +38,8 @@ dpg.show_viewport()
 from scipy import fftpack
 import numpy as np
 
-sampling_freq = 38400  # 采样频率
-chunk_size = 128  # 块大小
+sampling_freq = 250  # 采样频率
+chunk_size = 256  # 块大小
 
 
 '''
@@ -53,10 +53,14 @@ while dpg.is_dearpygui_running():
 
         line = uart.readline()
         line = line.decode('utf-8', errors='ignore')
-        pts = (line[:-2]).split(",")  # 去换行符
+        line+=",0,0,0,0,0,0,0"
+        pts = (line).split(",")  # 去换行符
+        
+        print(len(pts))
 
         for i in range(chunk_size):
             current_data[i] = pts[i]
+
 
         freq_sig = np.abs(fftpack.fft(current_data) * 2 * np.pi / chunk_size)
         freqs = fftpack.fftfreq(len(current_data)) * sampling_freq

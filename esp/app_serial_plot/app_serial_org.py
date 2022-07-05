@@ -51,6 +51,8 @@ while dpg.is_dearpygui_running():
         line = uart.readline()[:-2]  # 行读取 & 取换行符
         line = line.decode('utf-8', errors='ignore')  # 对字节数组进行解码
 
+        vlas=line.split(',')
+
         if cnt_buf > store_num:  # 防list过大导致程序崩溃, 就进行了切片处理
             cnt_buf = show_point_num
             data_x = data_x[show_point_num:]
