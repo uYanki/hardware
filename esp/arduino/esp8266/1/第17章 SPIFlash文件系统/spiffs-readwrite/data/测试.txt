@@ -1,0 +1,16 @@
+﻿gpio.mode(0,gpio.OUTPUT) if gpio.read(0)==gpio.HIGH then gpio.write(0,gpio.LOW) else gpio.write(0,gpio.HIGH) end
+
+bit n=1
+AA->BB |=(1<<n);
+bit n=0
+AA->BB &=~(1<<n);
+
+a=1100
+b=0110
+
+a&=b a=a&b a=0101
+a^=b a=a^b a=1001
+a|=b a=a|b a=1110
+
+2>>1  0010 0001
+1<<2  0001 0100

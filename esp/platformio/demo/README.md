@@ -1,0 +1,1 @@
+基于 `vscode` 的`platformio` 插件，使用 `Arduino` 的方法进行开发。

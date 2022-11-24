@@ -1,0 +1,1 @@
+注：sdcard.py（用于_demo.py） 和 sdcard2.py（用于_demo2.py） 部分代码不同

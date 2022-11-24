@@ -1,0 +1,4 @@
+dearpygui
+PyQt5
+scipy
+numpy
